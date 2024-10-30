@@ -47,46 +47,49 @@ function displayStudents() {
     });
 }
 
-// Iniciar sesión
-document.getElementById('loginButton').addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Inicio de sesión exitoso");
-        document.getElementById('admin').style.display = 'block'; // Mostrar sección de administración
-        loadStudents(); // Cargar estudiantes después de iniciar sesión
-    } catch (error) {
-        console.error("Error de inicio de sesión:", error);
-        alert(error.message);
-    }
-});
-
-// Agregar recompensa y actualizar Firestore
-async function addReward() {
-    const name = document.getElementById('studentName').value.trim();
-    const amount = parseFloat(document.getElementById('rewardAmount').value);
-    
-    const student = students.find(s => s.name === name);
-    
-    if (student && !isNaN(amount) && amount > 0) { // Validar estudiante y monto
-        student.balance += amount;
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', () => {
+    // Iniciar sesión
+    document.getElementById('loginButton').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
         try {
-            // Actualizar Firestore
-            const studentRef = doc(db, "students", student.id);
-            await updateDoc(studentRef, { balance: student.balance });
-
-            displayStudents(); // Actualizar la visualización de estudiantes
-            alert("Recompensa agregada con éxito.");
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("Inicio de sesión exitoso");
+            document.getElementById('admin').style.display = 'block'; // Mostrar sección de administración
+            loadStudents(); // Cargar estudiantes después de iniciar sesión
         } catch (error) {
-            console.error("Error actualizando la recompensa:", error);
-            alert("Error al agregar la recompensa. Verifica la consola para más detalles.");
+            console.error("Error de inicio de sesión:", error);
+            alert(error.message);
         }
-    } else {
-        alert('Estudiante no encontrado o monto inválido');
-    }
-}
+    });
 
-document.getElementById('addRewardButton').addEventListener('click', addReward);
+    // Agregar recompensa y actualizar Firestore
+    async function addReward() {
+        const name = document.getElementById('studentName').value.trim();
+        const amount = parseFloat(document.getElementById('rewardAmount').value);
+        
+        const student = students.find(s => s.name === name);
+        
+        if (student && !isNaN(amount) && amount > 0) { // Validar estudiante y monto
+            student.balance += amount;
+
+            try {
+                // Actualizar Firestore
+                const studentRef = doc(db, "students", student.id);
+                await updateDoc(studentRef, { balance: student.balance });
+
+                displayStudents(); // Actualizar la visualización de estudiantes
+                alert("Recompensa agregada con éxito.");
+            } catch (error) {
+                console.error("Error actualizando la recompensa:", error);
+                alert("Error al agregar la recompensa. Verifica la consola para más detalles.");
+            }
+        } else {
+            alert('Estudiante no encontrado o monto inválido');
+        }
+    }
+
+    document.getElementById('addRewardButton').addEventListener('click', addReward);
+});
