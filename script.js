@@ -1,30 +1,36 @@
-let students = [
-    { name: "Sofía Abarca", balance: 0 },
-    { name: "Antonella Beltrán", balance: 0 },
-    { name: "Francisco Bravo", balance: 0 },
-    { name: "Sofía Bravo", balance: 0 },
-    { name: "Mathew Cardozo", balance: 0 },
-    { name: "Agustín Caroca", balance: 0 },
-    { name: "Robinson Castro", balance: 0 },
-    { name: "Francisca Celsi", balance: 0 },
-    { name: "Juan Cerda", balance: 0 },
-    { name: "Vicente Cid", balance: 0 },
-    { name: "Benjamín Cornejo", balance: 0 },
-    { name: "Lucas Droguett", balance: 0 },
-    { name: "Ansheska Henríquez", balance: 0 },
-    { name: "Sebastián Madrid", balance: 0 },
-    { name: "Florencia Madrid", balance: 0 },
-    { name: "Javier Reyes", balance: 0 },
-    { name: "Evelyn Rojas", balance: 0 },
-    { name: "Lucas Rojas", balance: 0 },
-    { name: "Constanza Romero", balance: 0 },
-    { name: "Montserrat Silva", balance: 0 },
-    { name: "Gabriela Soto", balance: 0 },
-    { name: "Antonella Torres", balance: 0 },
-    { name: "María Paz Valdés", balance: 0 },
-    { name: "Ibar Alonso Bustamante", balance: 0 },
-];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
+// Tu configuración de Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyDdnluG_IKrDtGjTIOZ32tt2nsPFRgcfSU",
+    authDomain: "banco-segundob.firebaseapp.com",
+    projectId: "banco-segundob",
+    storageBucket: "banco-segundob.appspot.com",
+    messagingSenderId: "312587977591",
+    appId: "1:312587977591:web:fbee28b15257fadbf05772",
+    measurementId: "G-R5NQP34N0Q"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Variables globales
+let students = [];
+
+// Cargar estudiantes de Firestore
+async function loadStudents() {
+    const querySnapshot = await getDocs(collection(db, "students"));
+    querySnapshot.forEach((doc) => {
+        students.push({ id: doc.id, ...doc.data() });
+    });
+    displayStudents();
+}
+
+// Mostrar estudiantes en la interfaz
 function displayStudents() {
     const studentList = document.getElementById('students');
     studentList.innerHTML = '';
@@ -35,17 +41,38 @@ function displayStudents() {
     });
 }
 
-function addReward() {
+// Iniciar sesión
+document.getElementById('loginButton').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Inicio de sesión exitoso");
+        document.getElementById('admin').style.display = 'block'; // Mostrar sección de administración
+        loadStudents(); // Cargar estudiantes después de iniciar sesión
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+// Agregar recompensa y actualizar Firestore
+async function addReward() {
     const name = document.getElementById('studentName').value;
     const amount = parseFloat(document.getElementById('rewardAmount').value);
     
     const student = students.find(s => s.name === name);
     if (student && !isNaN(amount)) {
         student.balance += amount;
+
+        // Actualizar Firestore
+        const studentRef = doc(db, "students", student.id);
+        await updateDoc(studentRef, { balance: student.balance });
+
         displayStudents();
     } else {
         alert('Estudiante no encontrado o monto inválido');
     }
 }
 
-displayStudents();
+document.getElementById('addRewardButton').addEventListener('click', addReward);
