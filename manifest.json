@@ -1,0 +1,15 @@
+{
+    "name": "Simulador Bancario",
+    "short_name": "Banco Estudiantes",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4F81BD",
+    "icons": [
+        {
+            "src": "icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}

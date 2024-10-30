@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <title>Simulador Bancario</title>
+</head>
+<body>
+    <h1>Simulador Bancario para Estudiantes</h1>
+    <div id="student-list">
+        <h2>Lista de Estudiantes</h2>
+        <ul id="students"></ul>
+    </div>
+    <div id="reward-section">
+        <h2>Premiar Actividad</h2>
+        <input type="text" id="studentName" placeholder="Nombre del Estudiante">
+        <input type="number" id="rewardAmount" placeholder="Monto a premiar">
+        <button onclick="addReward()">Premiar</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
